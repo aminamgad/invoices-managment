@@ -1,0 +1,150 @@
+<% const title = 'إنشاء فاتورة جديدة'; %>
+<%- include('../layout', { title, body: `
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">إنشاء فاتورة جديدة</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="/invoices" class="btn btn-outline-secondary">
+            <i class="fas fa-arrow-right"></i>
+            العودة للفواتير
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">بيانات الفاتورة</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="/invoices">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="invoiceCode" class="form-label">رقم الفاتورة <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="invoiceCode" name="invoiceCode" required>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="invoiceDate" class="form-label">تاريخ الفاتورة <span class="text-danger">*</span></label>
+                            <input type="date" class="form-control" id="invoiceDate" name="invoiceDate" required>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="client" class="form-label">العميل <span class="text-danger">*</span></label>
+                            <select class="form-select" id="client" name="client" required>
+                                <option value="">اختر العميل</option>
+                                ${clients.map(client => `
+                                    <option value="${client._id}" data-commission="${client.commissionRate}">${client.fullName}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="file" class="form-label">الملف <span class="text-danger">*</span></label>
+                            <select class="form-select" id="file" name="file" required>
+                                <option value="">اختر الملف</option>
+                                ${files.map(file => `
+                                    <option value="${file._id}">${file.fileName} - ${file.company?.name || 'غير محدد'}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="assignedDistributor" class="form-label">الموزع المكلف <span class="text-danger">*</span></label>
+                            <select class="form-select" id="assignedDistributor" name="assignedDistributor" required>
+                                <option value="">اختر الموزع</option>
+                                ${distributors.map(distributor => `
+                                    <option value="${distributor._id}" data-commission="${distributor.commissionRate}">${distributor.username}</option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="amount" class="form-label">المبلغ (ريال) <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="amount" name="amount" min="0" step="0.01" required>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            إنشاء الفاتورة
+                        </button>
+                        <a href="/invoices" class="btn btn-outline-secondary">إلغاء</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">معلومات العمولة</h5>
+            </div>
+            <div class="card-body">
+                <div id="commissionInfo">
+                    <p class="text-muted">اختر العميل والموزع لعرض معلومات العمولة</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5 class="mb-0">تعليمات</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li class="mb-2">
+                        <i class="fas fa-hashtag text-info"></i>
+                        رقم الفاتورة يجب أن يكون فريد
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-percentage text-warning"></i>
+                        نسب العمولة ستملأ تلقائياً
+                    </li>
+                    <li class="mb-2">
+                        <i class="fas fa-calculator text-success"></i>
+                        تأكد من صحة المبلغ المدخل
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const clientSelect = document.getElementById('client');
+    const distributorSelect = document.getElementById('assignedDistributor');
+    const commissionInfo = document.getElementById('commissionInfo');
+    
+    function updateCommissionInfo() {
+        const clientOption = clientSelect.options[clientSelect.selectedIndex];
+        const distributorOption = distributorSelect.options[distributorSelect.selectedIndex];
+        
+        if (clientSelect.value && distributorSelect.value) {
+            const clientCommission = clientOption.dataset.commission || 0;
+            const distributorCommission = distributorOption.dataset.commission || 0;
+            
+            commissionInfo.innerHTML = \`
+                <p><strong>عمولة العميل:</strong> %\${clientCommission}</p>
+                <p><strong>عمولة الموزع:</strong> %\${distributorCommission}</p>
+                <div class="alert alert-info">
+                    <small>ستحفظ هذه النسب مع الفاتورة</small>
+                </div>
+            \`;
+        } else {
+            commissionInfo.innerHTML = '<p class="text-muted">اختر العميل والموزع لعرض معلومات العمولة</p>';
+        }
+    }
+    
+    clientSelect.addEventListener('change', updateCommissionInfo);
+    distributorSelect.addEventListener('change', updateCommissionInfo);
+});
+</script>
+` }) %>

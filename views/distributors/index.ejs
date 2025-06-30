@@ -1,0 +1,73 @@
+<% const title = 'إدارة الموزعين'; %>
+<%- include('../layout', { title, body: `
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">إدارة الموزعين</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <a href="/distributors/new" class="btn btn-primary">
+            <i class="fas fa-plus"></i>
+            إضافة موزع جديد
+        </a>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        ${distributors && distributors.length > 0 ? `
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>اسم المستخدم</th>
+                            <th>نسبة العمولة</th>
+                            <th>الصلاحيات</th>
+                            <th>الحالة</th>
+                            <th>تاريخ الإنشاء</th>
+                            <th>الإجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${distributors.map(distributor => `
+                            <tr>
+                                <td><strong>${distributor.username}</strong></td>
+                                <td><span class="badge bg-info">%${distributor.commissionRate}</span></td>
+                                <td>
+                                    <div class="d-flex flex-wrap gap-1">
+                                        ${distributor.permissions.canCreateCompanies ? '<span class="badge bg-primary">إنشاء شركات</span>' : ''}
+                                        ${distributor.permissions.canCreateInvoices ? '<span class="badge bg-success">إنشاء فواتير</span>' : ''}
+                                        ${distributor.permissions.canManageClients ? '<span class="badge bg-warning">إدارة عملاء</span>' : ''}
+                                        ${distributor.permissions.canViewReports ? '<span class="badge bg-info">عرض تقارير</span>' : ''}
+                                    </div>
+                                </td>
+                                <td>
+                                    ${distributor.isActive ? 
+                                        '<span class="badge bg-success">نشط</span>' : 
+                                        '<span class="badge bg-danger">غير نشط</span>'
+                                    }
+                                </td>
+                                <td>${new Date(distributor.createdAt).toLocaleDateString('ar-EG')}</td>
+                                <td>
+                                    <div class="btn-group" role="group">
+                                        <a href="/distributors/${distributor._id}/edit" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        `).join('')}
+                    </tbody>
+                </table>
+            </div>
+        ` : `
+            <div class="text-center py-5">
+                <i class="fas fa-user-tie fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">لا توجد موزعين حالياً</h5>
+                <p class="text-muted">ابدأ بإضافة موزع جديد</p>
+                <a href="/distributors/new" class="btn btn-primary">
+                    <i class="fas fa-plus"></i>
+                    إضافة موزع جديد
+                </a>
+            </div>
+        `}
+    </div>
+</div>
+` }) %>
