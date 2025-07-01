@@ -171,6 +171,15 @@
                                 </a>
                             </li>
                             
+                            <% if (currentUser.role === 'admin' || currentUser.permissions.canViewReports) { %>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/reports">
+                                    <i class="fas fa-chart-line ms-2"></i>
+                                    تقارير الأرباح
+                                </a>
+                            </li>
+                            <% } %>
+                            
                             <% if (currentUser.role === 'admin' || currentUser.permissions.canManageClients) { %>
                             <li class="nav-item">
                                 <a class="nav-link" href="/clients">

@@ -4,6 +4,12 @@
     <h1 class="h2">لوحة التحكم</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <div class="btn-group ms-2">
+            ${user.role === 'admin' || user.permissions.canViewReports ? `
+                <a href="/reports" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-chart-line"></i>
+                    تقارير الأرباح
+                </a>
+            ` : ''}
             <button type="button" class="btn btn-sm btn-outline-secondary">
                 <i class="fas fa-download"></i>
                 تصدير
@@ -109,6 +115,7 @@ ${user.role === 'admin' ? `
                                     <th>العميل</th>
                                     <th>الملف</th>
                                     ${user.role === 'admin' ? '<th>الموزع</th>' : ''}
+                                    <th>المبلغ</th>
                                     <th>التاريخ</th>
                                     <th>الحالة</th>
                                 </tr>
@@ -120,6 +127,7 @@ ${user.role === 'admin' ? `
                                         <td>${invoice.client.fullName}</td>
                                         <td>${invoice.file.fileName}</td>
                                         ${user.role === 'admin' ? `<td>${invoice.assignedDistributor.username}</td>` : ''}
+                                        <td><span class="badge bg-primary">${invoice.amount.toLocaleString('ar-SA')} ريال</span></td>
                                         <td>${new Date(invoice.invoiceDate).toLocaleDateString('ar-EG')}</td>
                                         <td>
                                             ${invoice.status === 'pending' ? '<span class="badge bg-warning">قيد الانتظار</span>' : 
@@ -151,6 +159,15 @@ ${user.role === 'admin' ? `
             </div>
             <div class="card-body">
                 <div class="row">
+                    ${user.role === 'admin' || user.permissions.canViewReports ? `
+                        <div class="col-md-3 col-sm-6 mb-3">
+                            <a href="/reports" class="btn btn-info w-100">
+                                <i class="fas fa-chart-line mb-2"></i><br>
+                                تقارير الأرباح
+                            </a>
+                        </div>
+                    ` : ''}
+                    
                     ${user.role === 'admin' || user.permissions.canCreateInvoices ? `
                         <div class="col-md-3 col-sm-6 mb-3">
                             <a href="/invoices/new" class="btn btn-primary w-100">

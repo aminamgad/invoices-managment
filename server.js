@@ -16,6 +16,7 @@ import companyRoutes from './routes/companies.js';
 import fileRoutes from './routes/files.js';
 import invoiceRoutes from './routes/invoices.js';
 import commissionTierRoutes from './routes/commission-tiers.js';
+import reportRoutes from './routes/reports.js';
 
 // Import middleware
 import { requireAuth, requireAdmin } from './middleware/auth.js';
@@ -71,6 +72,7 @@ app.use('/companies', requireAuth, companyRoutes);
 app.use('/files', requireAuth, fileRoutes);
 app.use('/invoices', requireAuth, invoiceRoutes);
 app.use('/commission-tiers', requireAuth, requireAdmin, commissionTierRoutes);
+app.use('/reports', requireAuth, reportRoutes);
 
 // Home route
 app.get('/', (req, res) => {
