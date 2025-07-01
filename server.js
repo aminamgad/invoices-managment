@@ -15,6 +15,7 @@ import distributorRoutes from './routes/distributors.js';
 import companyRoutes from './routes/companies.js';
 import fileRoutes from './routes/files.js';
 import invoiceRoutes from './routes/invoices.js';
+import commissionTierRoutes from './routes/commission-tiers.js';
 
 // Import middleware
 import { requireAuth, requireAdmin } from './middleware/auth.js';
@@ -69,6 +70,7 @@ app.use('/distributors', requireAuth, requireAdmin, distributorRoutes);
 app.use('/companies', requireAuth, companyRoutes);
 app.use('/files', requireAuth, fileRoutes);
 app.use('/invoices', requireAuth, invoiceRoutes);
+app.use('/commission-tiers', requireAuth, requireAdmin, commissionTierRoutes);
 
 // Home route
 app.get('/', (req, res) => {

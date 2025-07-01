@@ -213,6 +213,15 @@
                                 </a>
                             </li>
                             <% } %>
+                            
+                            <% if (currentUser.role === 'admin') { %>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/commission-tiers">
+                                    <i class="fas fa-percentage ms-2"></i>
+                                    مستويات العمولة
+                                </a>
+                            </li>
+                            <% } %>
                         </ul>
                         
                         <div class="mt-auto pt-3">
