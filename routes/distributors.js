@@ -1,34 +1,12 @@
 import express from 'express';
 import User from '../models/User.js';
-import Permission from '../models/Permission.js';
-import Role from '../models/Role.js';
 
 const router = express.Router();
-
-// Default permissions for new distributors
-const getDefaultDistributorPermissions = async () => {
-  const defaultPermissionNames = [
-    // Clients, Files, Orders: View Own + Create + Update + Delete
-    'clients.view_own', 'clients.create', 'clients.update', 'clients.delete',
-    'files.view_own', 'files.create', 'files.update', 'files.delete',
-    'orders.view_own', 'orders.create', 'orders.update', 'orders.delete',
-    // Suppliers, Agents: View Own only
-    'suppliers.view_own',
-    'agents.view_own',
-    // Reports: View Own
-    'reports.view_own'
-  ];
-  
-  const permissions = await Permission.find({ name: { $in: defaultPermissionNames } });
-  return permissions.map(p => p._id);
-};
 
 // List distributors
 router.get('/', async (req, res) => {
   try {
-    const distributors = await User.find({ role: 'distributor' })
-      .populate('roles')
-      .sort({ createdAt: -1 });
+    const distributors = await User.find({ role: 'distributor' }).sort({ createdAt: -1 });
     res.render('distributors/index', { distributors });
   } catch (error) {
     req.flash('error', 'حدث خطأ أثناء تحميل الموزعين');
@@ -37,30 +15,8 @@ router.get('/', async (req, res) => {
 });
 
 // New distributor form
-router.get('/new', async (req, res) => {
-  try {
-    const permissions = await Permission.find({ isActive: true }).sort({ module: 1, action: 1 });
-    
-    // Group permissions by module
-    const groupedPermissions = permissions.reduce((acc, permission) => {
-      if (!acc[permission.module]) {
-        acc[permission.module] = [];
-      }
-      acc[permission.module].push(permission);
-      return acc;
-    }, {});
-    
-    // Get default permissions for distributors
-    const defaultPermissions = await getDefaultDistributorPermissions();
-    
-    res.render('distributors/new', { 
-      groupedPermissions,
-      defaultPermissions: defaultPermissions.map(id => id.toString())
-    });
-  } catch (error) {
-    req.flash('error', 'حدث خطأ أثناء تحميل البيانات');
-    res.redirect('/distributors');
-  }
+router.get('/new', (req, res) => {
+  res.render('distributors/new');
 });
 
 // Create distributor
@@ -82,14 +38,6 @@ router.post('/', async (req, res) => {
     });
     
     await distributor.save();
-    
-    // Assign distributor role
-    const distributorRole = await Role.findOne({ name: 'distributor' });
-    if (distributorRole) {
-      distributor.roles = [distributorRole._id];
-      await distributor.save();
-    }
-    
     req.flash('success', 'تم إضافة الموزع بنجاح');
     res.redirect('/distributors');
   } catch (error) {
@@ -101,43 +49,12 @@ router.post('/', async (req, res) => {
 // Edit distributor form
 router.get('/:id/edit', async (req, res) => {
   try {
-    const distributor = await User.findById(req.params.id)
-      .populate({
-        path: 'roles',
-        populate: {
-          path: 'permissions'
-        }
-      });
-      
+    const distributor = await User.findById(req.params.id);
     if (!distributor) {
       req.flash('error', 'الموزع غير موجود');
       return res.redirect('/distributors');
     }
-    
-    const permissions = await Permission.find({ isActive: true }).sort({ module: 1, action: 1 });
-    
-    // Group permissions by module
-    const groupedPermissions = permissions.reduce((acc, permission) => {
-      if (!acc[permission.module]) {
-        acc[permission.module] = [];
-      }
-      acc[permission.module].push(permission);
-      return acc;
-    }, {});
-    
-    // Get current user permissions
-    const userPermissions = [];
-    distributor.roles.forEach(role => {
-      role.permissions.forEach(permission => {
-        userPermissions.push(permission._id.toString());
-      });
-    });
-    
-    res.render('distributors/edit', { 
-      distributor, 
-      groupedPermissions,
-      userPermissions
-    });
+    res.render('distributors/edit', { distributor });
   } catch (error) {
     req.flash('error', 'حدث خطأ أثناء تحميل بيانات الموزع');
     res.redirect('/distributors');

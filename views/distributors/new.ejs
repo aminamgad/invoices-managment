@@ -37,74 +37,36 @@
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">الصلاحيات <span class="text-danger">*</span></label>
-                        <div class="permissions-container">
-                            ${Object.keys(groupedPermissions).map(module => {
-                                const moduleNameMap = {
-                                    'suppliers': 'الشركات',
-                                    'clients': 'العملاء', 
-                                    'files': 'الملفات',
-                                    'orders': 'الطلبات',
-                                    'agents': 'الوُسطاء',
-                                    'reports': 'التقارير',
-                                    'commission-tiers': 'مستويات العمولة',
-                                    'roles': 'الأدوار',
-                                    'permissions': 'الصلاحيات',
-                                    'system': 'النظام'
-                                };
-                                
-                                return `
-                                    <div class="card mb-3">
-                                        <div class="card-header">
-                                            <div class="d-flex justify-content-between align-items-center">
-                                                <h6 class="mb-0">${moduleNameMap[module] || module}</h6>
-                                                <div>
-                                                    <button type="button" class="btn btn-sm btn-outline-primary" onclick="selectAllModule('${module}')">تحديد الكل</button>
-                                                    <button type="button" class="btn btn-sm btn-outline-secondary" onclick="deselectAllModule('${module}')">إلغاء الكل</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="card-body">
-                                            <div class="table-responsive">
-                                                <table class="table table-sm">
-                                                    <thead>
-                                                        <tr>
-                                                            <th>الصلاحية</th>
-                                                            <th class="text-center">عرض الخاصة</th>
-                                                            <th class="text-center">عرض الكل</th>
-                                                            <th class="text-center">إنشاء</th>
-                                                            <th class="text-center">تعديل</th>
-                                                            <th class="text-center">حذف</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        <tr>
-                                                            <td><strong>${moduleNameMap[module] || module}</strong></td>
-                                                            ${['view_own', 'view_all', 'create', 'update', 'delete'].map(action => {
-                                                                const permission = groupedPermissions[module].find(p => p.action === action);
-                                                                if (permission) {
-                                                                    const isChecked = defaultPermissions.includes(permission._id.toString());
-                                                                    return `
-                                                                        <td class="text-center">
-                                                                            <div class="form-check d-flex justify-content-center">
-                                                                                <input class="form-check-input module-${module}" type="checkbox" 
-                                                                                       id="perm_${permission._id}" name="permissions" 
-                                                                                       value="${permission._id}" ${isChecked ? 'checked' : ''}>
-                                                                            </div>
-                                                                        </td>
-                                                                    `;
-                                                                } else {
-                                                                    return '<td class="text-center text-muted">-</td>';
-                                                                }
-                                                            }).join('')}
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </div>
-                                    </div>
-                                `;
-                            }).join('')}
+                        <label class="form-label">الصلاحيات</label>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="canCreateCompanies" name="permissions[canCreateCompanies]">
+                                    <label class="form-check-label" for="canCreateCompanies">
+                                        إنشاء الشركات
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="canCreateInvoices" name="permissions[canCreateInvoices]">
+                                    <label class="form-check-label" for="canCreateInvoices">
+                                        إنشاء الفواتير
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="canManageClients" name="permissions[canManageClients]">
+                                    <label class="form-check-label" for="canManageClients">
+                                        إدارة العملاء
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="canViewReports" name="permissions[canViewReports]">
+                                    <label class="form-check-label" for="canViewReports">
+                                        عرض التقارير
+                                    </label>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -123,35 +85,6 @@
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">الصلاحيات الافتراضية</h5>
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <h6 class="text-success">العملاء، الملفات، الطلبات:</h6>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-check text-success"></i> عرض الخاصة</li>
-                        <li><i class="fas fa-times text-danger"></i> عرض الكل</li>
-                        <li><i class="fas fa-check text-success"></i> إنشاء</li>
-                        <li><i class="fas fa-check text-success"></i> تعديل</li>
-                        <li><i class="fas fa-check text-success"></i> حذف</li>
-                    </ul>
-                </div>
-                
-                <div class="mb-3">
-                    <h6 class="text-warning">الشركات، الوُسطاء:</h6>
-                    <ul class="list-unstyled">
-                        <li><i class="fas fa-check text-success"></i> عرض الخاصة</li>
-                        <li><i class="fas fa-times text-danger"></i> عرض الكل</li>
-                        <li><i class="fas fa-times text-danger"></i> إنشاء</li>
-                        <li><i class="fas fa-times text-danger"></i> تعديل</li>
-                        <li><i class="fas fa-times text-danger"></i> حذف</li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        
-        <div class="card mt-3">
-            <div class="card-header">
                 <h5 class="mb-0">تعليمات</h5>
             </div>
             <div class="card-body">
@@ -166,63 +99,11 @@
                     </li>
                     <li class="mb-2">
                         <i class="fas fa-shield-alt text-success"></i>
-                        الصلاحيات محددة مسبقاً حسب أفضل الممارسات
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-edit text-primary"></i>
-                        يمكنك تعديل الصلاحيات حسب الحاجة
+                        حدد الصلاحيات المناسبة للموزع
                     </li>
                 </ul>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-function selectAllModule(module) {
-    const checkboxes = document.querySelectorAll(\`.module-\${module}\`);
-    checkboxes.forEach(checkbox => checkbox.checked = true);
-}
-
-function deselectAllModule(module) {
-    const checkboxes = document.querySelectorAll(\`.module-\${module}\`);
-    checkboxes.forEach(checkbox => checkbox.checked = false);
-}
-
-// Apply default permissions based on module
-function applyDefaultPermissions() {
-    // Clients, Files, Orders: View Own + Create + Update + Delete
-    const fullAccessModules = ['clients', 'files', 'orders'];
-    fullAccessModules.forEach(module => {
-        ['view_own', 'create', 'update', 'delete'].forEach(action => {
-            const checkbox = document.querySelector(\`input[id*="\${module}.\${action}"]\`);
-            if (checkbox) checkbox.checked = true;
-        });
-        
-        // Uncheck view_all for these modules
-        const viewAllCheckbox = document.querySelector(\`input[id*="\${module}.view_all"]\`);
-        if (viewAllCheckbox) viewAllCheckbox.checked = false;
-    });
-    
-    // Suppliers, Agents: View Own only
-    const limitedAccessModules = ['suppliers', 'agents'];
-    limitedAccessModules.forEach(module => {
-        // Check only view_own
-        const viewOwnCheckbox = document.querySelector(\`input[id*="\${module}.view_own"]\`);
-        if (viewOwnCheckbox) viewOwnCheckbox.checked = true;
-        
-        // Uncheck all others
-        ['view_all', 'create', 'update', 'delete'].forEach(action => {
-            const checkbox = document.querySelector(\`input[id*="\${module}.\${action}"]\`);
-            if (checkbox) checkbox.checked = false;
-        });
-    });
-}
-
-// Apply defaults when page loads
-document.addEventListener('DOMContentLoaded', function() {
-    // Defaults are already applied via server-side rendering
-    console.log('Default permissions applied');
-});
-</script>
 ` }) %>
