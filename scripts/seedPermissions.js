@@ -7,51 +7,47 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 const permissions = [
-  // Companies
-  { name: 'companies.create', displayName: 'إنشاء شركة', module: 'companies', action: 'create' },
-  { name: 'companies.read', displayName: 'عرض الشركات', module: 'companies', action: 'read' },
-  { name: 'companies.update', displayName: 'تعديل شركة', module: 'companies', action: 'update' },
-  { name: 'companies.delete', displayName: 'حذف شركة', module: 'companies', action: 'delete' },
-  { name: 'companies.read_all', displayName: 'عرض جميع الشركات', module: 'companies', action: 'read_all' },
+  // Suppliers (الشركات)
+  { name: 'suppliers.view_own', displayName: 'عرض الشركات الخاصة', module: 'suppliers', action: 'view_own' },
+  { name: 'suppliers.view_all', displayName: 'عرض جميع الشركات', module: 'suppliers', action: 'view_all' },
+  { name: 'suppliers.create', displayName: 'إنشاء شركة', module: 'suppliers', action: 'create' },
+  { name: 'suppliers.update', displayName: 'تعديل شركة', module: 'suppliers', action: 'update' },
+  { name: 'suppliers.delete', displayName: 'حذف شركة', module: 'suppliers', action: 'delete' },
   
-  // Clients
+  // Clients (العملاء)
+  { name: 'clients.view_own', displayName: 'عرض العملاء الخاصة', module: 'clients', action: 'view_own' },
+  { name: 'clients.view_all', displayName: 'عرض جميع العملاء', module: 'clients', action: 'view_all' },
   { name: 'clients.create', displayName: 'إنشاء عميل', module: 'clients', action: 'create' },
-  { name: 'clients.read', displayName: 'عرض العملاء', module: 'clients', action: 'read' },
   { name: 'clients.update', displayName: 'تعديل عميل', module: 'clients', action: 'update' },
   { name: 'clients.delete', displayName: 'حذف عميل', module: 'clients', action: 'delete' },
-  { name: 'clients.read_all', displayName: 'عرض جميع العملاء', module: 'clients', action: 'read_all' },
-  { name: 'clients.read_own', displayName: 'عرض العملاء الخاصة', module: 'clients', action: 'read_own' },
   
-  // Files
+  // Files (الملفات)
+  { name: 'files.view_own', displayName: 'عرض الملفات الخاصة', module: 'files', action: 'view_own' },
+  { name: 'files.view_all', displayName: 'عرض جميع الملفات', module: 'files', action: 'view_all' },
   { name: 'files.create', displayName: 'إنشاء ملف', module: 'files', action: 'create' },
-  { name: 'files.read', displayName: 'عرض الملفات', module: 'files', action: 'read' },
   { name: 'files.update', displayName: 'تعديل ملف', module: 'files', action: 'update' },
   { name: 'files.delete', displayName: 'حذف ملف', module: 'files', action: 'delete' },
-  { name: 'files.read_all', displayName: 'عرض جميع الملفات', module: 'files', action: 'read_all' },
-  { name: 'files.read_own', displayName: 'عرض الملفات الخاصة', module: 'files', action: 'read_own' },
   
-  // Invoices
-  { name: 'invoices.create', displayName: 'إنشاء فاتورة', module: 'invoices', action: 'create' },
-  { name: 'invoices.read', displayName: 'عرض الفواتير', module: 'invoices', action: 'read' },
-  { name: 'invoices.update', displayName: 'تعديل فاتورة', module: 'invoices', action: 'update' },
-  { name: 'invoices.delete', displayName: 'حذف فاتورة', module: 'invoices', action: 'delete' },
-  { name: 'invoices.read_all', displayName: 'عرض جميع الفواتير', module: 'invoices', action: 'read_all' },
-  { name: 'invoices.read_own', displayName: 'عرض الفواتير الخاصة', module: 'invoices', action: 'read_own' },
+  // Orders (الطلبات)
+  { name: 'orders.view_own', displayName: 'عرض الطلبات الخاصة', module: 'orders', action: 'view_own' },
+  { name: 'orders.view_all', displayName: 'عرض جميع الطلبات', module: 'orders', action: 'view_all' },
+  { name: 'orders.create', displayName: 'إنشاء طلب', module: 'orders', action: 'create' },
+  { name: 'orders.update', displayName: 'تعديل طلب', module: 'orders', action: 'update' },
+  { name: 'orders.delete', displayName: 'حذف طلب', module: 'orders', action: 'delete' },
   
-  // Distributors
-  { name: 'distributors.create', displayName: 'إنشاء موزع', module: 'distributors', action: 'create' },
-  { name: 'distributors.read', displayName: 'عرض الموزعين', module: 'distributors', action: 'read' },
-  { name: 'distributors.update', displayName: 'تعديل موزع', module: 'distributors', action: 'update' },
-  { name: 'distributors.delete', displayName: 'حذف موزع', module: 'distributors', action: 'delete' },
-  { name: 'distributors.manage', displayName: 'إدارة الموزعين', module: 'distributors', action: 'manage' },
+  // Agents (الوُسطاء)
+  { name: 'agents.view_own', displayName: 'عرض الوُسطاء الخاصة', module: 'agents', action: 'view_own' },
+  { name: 'agents.view_all', displayName: 'عرض جميع الوُسطاء', module: 'agents', action: 'view_all' },
+  { name: 'agents.create', displayName: 'إنشاء وسيط', module: 'agents', action: 'create' },
+  { name: 'agents.update', displayName: 'تعديل وسيط', module: 'agents', action: 'update' },
+  { name: 'agents.delete', displayName: 'حذف وسيط', module: 'agents', action: 'delete' },
   
-  // Reports
-  { name: 'reports.read', displayName: 'عرض التقارير', module: 'reports', action: 'read' },
-  { name: 'reports.read_all', displayName: 'عرض جميع التقارير', module: 'reports', action: 'read_all' },
-  { name: 'reports.read_own', displayName: 'عرض التقارير الخاصة', module: 'reports', action: 'read_own' },
+  // Reports (التقارير)
+  { name: 'reports.view_own', displayName: 'عرض التقارير الخاصة', module: 'reports', action: 'view_own' },
+  { name: 'reports.view_all', displayName: 'عرض جميع التقارير', module: 'reports', action: 'view_all' },
   { name: 'reports.export', displayName: 'تصدير التقارير', module: 'reports', action: 'manage' },
   
-  // Commission Tiers
+  // Commission Tiers (مستويات العمولة)
   { name: 'commission-tiers.create', displayName: 'إنشاء مستوى عمولة', module: 'commission-tiers', action: 'create' },
   { name: 'commission-tiers.read', displayName: 'عرض مستويات العمولة', module: 'commission-tiers', action: 'read' },
   { name: 'commission-tiers.update', displayName: 'تعديل مستوى عمولة', module: 'commission-tiers', action: 'update' },
@@ -89,11 +85,12 @@ const roles = [
     description: 'صلاحيات إدارية محدودة',
     isSystemRole: true,
     permissions: [
-      'companies.read', 'companies.create', 'companies.update',
-      'clients.read', 'clients.create', 'clients.update', 'clients.read_all',
-      'files.read', 'files.create', 'files.update', 'files.read_all',
-      'invoices.read', 'invoices.create', 'invoices.update', 'invoices.read_all',
-      'reports.read', 'reports.read_all', 'reports.export',
+      'suppliers.view_all', 'suppliers.create', 'suppliers.update',
+      'clients.view_all', 'clients.create', 'clients.update',
+      'files.view_all', 'files.create', 'files.update',
+      'orders.view_all', 'orders.create', 'orders.update',
+      'agents.view_all', 'agents.create', 'agents.update',
+      'reports.view_all', 'reports.export',
       'commission-tiers.read', 'commission-tiers.create', 'commission-tiers.update'
     ]
   },
@@ -103,10 +100,15 @@ const roles = [
     description: 'صلاحيات أساسية للموزعين',
     isSystemRole: true,
     permissions: [
-      'clients.read', 'clients.read_own',
-      'files.read', 'files.read_own',
-      'invoices.read', 'invoices.create', 'invoices.read_own',
-      'reports.read', 'reports.read_own'
+      // Clients, Files, Orders: View Own + Create + Update + Delete
+      'clients.view_own', 'clients.create', 'clients.update', 'clients.delete',
+      'files.view_own', 'files.create', 'files.update', 'files.delete',
+      'orders.view_own', 'orders.create', 'orders.update', 'orders.delete',
+      // Suppliers, Agents: View Own only
+      'suppliers.view_own',
+      'agents.view_own',
+      // Reports: View Own
+      'reports.view_own'
     ]
   },
   {
@@ -115,9 +117,11 @@ const roles = [
     description: 'صلاحيات محدودة للموظفين',
     isSystemRole: true,
     permissions: [
-      'clients.read', 'clients.read_own',
-      'files.read', 'files.read_own',
-      'invoices.read', 'invoices.read_own'
+      'clients.view_own',
+      'files.view_own',
+      'orders.view_own',
+      'suppliers.view_own',
+      'agents.view_own'
     ]
   }
 ];
