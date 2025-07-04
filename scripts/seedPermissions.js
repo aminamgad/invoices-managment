@@ -53,6 +53,27 @@ const permissions = [
   { name: 'commission-tiers.update', displayName: 'تعديل مستوى عمولة', module: 'commission-tiers', action: 'update' },
   { name: 'commission-tiers.delete', displayName: 'حذف مستوى عمولة', module: 'commission-tiers', action: 'delete' },
   
+  // Companies (backward compatibility)
+  { name: 'companies.view_own', displayName: 'عرض الشركات الخاصة', module: 'companies', action: 'view_own' },
+  { name: 'companies.view_all', displayName: 'عرض جميع الشركات', module: 'companies', action: 'view_all' },
+  { name: 'companies.create', displayName: 'إنشاء شركة', module: 'companies', action: 'create' },
+  { name: 'companies.update', displayName: 'تعديل شركة', module: 'companies', action: 'update' },
+  { name: 'companies.delete', displayName: 'حذف شركة', module: 'companies', action: 'delete' },
+  
+  // Invoices (backward compatibility)
+  { name: 'invoices.view_own', displayName: 'عرض الفواتير الخاصة', module: 'invoices', action: 'view_own' },
+  { name: 'invoices.view_all', displayName: 'عرض جميع الفواتير', module: 'invoices', action: 'view_all' },
+  { name: 'invoices.create', displayName: 'إنشاء فاتورة', module: 'invoices', action: 'create' },
+  { name: 'invoices.update', displayName: 'تعديل فاتورة', module: 'invoices', action: 'update' },
+  { name: 'invoices.delete', displayName: 'حذف فاتورة', module: 'invoices', action: 'delete' },
+  
+  // Distributors
+  { name: 'distributors.view_own', displayName: 'عرض الموزعين الخاصة', module: 'distributors', action: 'view_own' },
+  { name: 'distributors.view_all', displayName: 'عرض جميع الموزعين', module: 'distributors', action: 'view_all' },
+  { name: 'distributors.create', displayName: 'إنشاء موزع', module: 'distributors', action: 'create' },
+  { name: 'distributors.update', displayName: 'تعديل موزع', module: 'distributors', action: 'update' },
+  { name: 'distributors.delete', displayName: 'حذف موزع', module: 'distributors', action: 'delete' },
+  
   // Roles & Permissions
   { name: 'roles.create', displayName: 'إنشاء دور', module: 'roles', action: 'create' },
   { name: 'roles.read', displayName: 'عرض الأدوار', module: 'roles', action: 'read' },
@@ -100,12 +121,13 @@ const roles = [
     description: 'صلاحيات أساسية للموزعين',
     isSystemRole: true,
     permissions: [
-      // Clients, Files, Orders: View Own + Create + Update + Delete
-      'clients.view_own', 'clients.create', 'clients.update', 'clients.delete',
-      'files.view_own', 'files.create', 'files.update', 'files.delete',
-      'orders.view_own', 'orders.create', 'orders.update', 'orders.delete',
-      // Suppliers, Agents: View Own only
-      'suppliers.view_own',
+      // Suppliers: View Own + View All
+      'suppliers.view_own', 'suppliers.view_all',
+      // Clients, Files, Orders: View Own + View All + Create + Update + Delete
+      'clients.view_own', 'clients.view_all', 'clients.create', 'clients.update', 'clients.delete',
+      'files.view_own', 'files.view_all', 'files.create', 'files.update', 'files.delete',
+      'orders.view_own', 'orders.view_all', 'orders.create', 'orders.update', 'orders.delete',
+      // Agents: View Own only
       'agents.view_own',
       // Reports: View Own
       'reports.view_own'

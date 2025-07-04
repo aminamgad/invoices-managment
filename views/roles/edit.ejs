@@ -1,7 +1,7 @@
-<% const title = 'إضافة دور جديد'; %>
+<% const title = 'تعديل الدور'; %>
 <%- include('../layout', { title, body: `
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">إضافة دور جديد</h1>
+    <h1 class="h2">تعديل الدور</h1>
     <div class="btn-toolbar mb-2 mb-md-0">
         <a href="/roles" class="btn btn-outline-secondary">
             <i class="fas fa-arrow-right"></i>
@@ -17,27 +17,27 @@
                 <h5 class="mb-0">بيانات الدور</h5>
             </div>
             <div class="card-body">
-                <form method="POST" action="/roles">
+                <form method="POST" action="/roles/${role._id}?_method=PUT">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="name" class="form-label">اسم الدور (بالإنجليزية) <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="name" name="name" required placeholder="manager">
+                            <input type="text" class="form-control" id="name" name="name" value="${role.name}" required ${role.isSystemRole ? 'readonly' : ''}>
                             <div class="form-text">يُستخدم في النظام (بدون مسافات)</div>
                         </div>
                         
                         <div class="col-md-6 mb-3">
                             <label for="displayName" class="form-label">الاسم المعروض <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control" id="displayName" name="displayName" required placeholder="مدير">
+                            <input type="text" class="form-control" id="displayName" name="displayName" value="${role.displayName}" required>
                         </div>
                     </div>
                     
                     <div class="mb-3">
                         <label for="description" class="form-label">الوصف</label>
-                        <textarea class="form-control" id="description" name="description" rows="3" placeholder="وصف مختصر للدور وصلاحياته"></textarea>
+                        <textarea class="form-control" id="description" name="description" rows="3">${role.description || ''}</textarea>
                     </div>
                     
                     <div class="mb-3">
-                        <label class="form-label">الصلاحيات <span class="text-danger">*</span></label>
+                        <label class="form-label">الصلاحيات</label>
                         <div class="permissions-table-container">
                             <div class="table-responsive">
                                 <table class="table table-bordered permissions-table">
@@ -57,24 +57,39 @@
                                 </table>
                             </div>
                             
-                            <div class="d-flex justify-content-between mt-3">
-                                <div>
-                                    <button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="selectAllPermissions()">تحديد الكل</button>
-                                    <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearAllPermissions()">إلغاء الكل</button>
+                            ${!role.isSystemRole ? `
+                                <div class="d-flex justify-content-between mt-3">
+                                    <div>
+                                        <button type="button" class="btn btn-outline-primary btn-sm me-2" onclick="selectAllPermissions()">تحديد الكل</button>
+                                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearAllPermissions()">إلغاء الكل</button>
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-sm" onclick="applyDefaultPermissions()">
+                                        تطبيق الافتراضي
+                                    </button>
                                 </div>
-                                <button type="button" class="btn btn-primary btn-sm" onclick="applyDefaultPermissions()">
-                                    تطبيق الافتراضي
-                                </button>
-                            </div>
+                            ` : ''}
                         </div>
                     </div>
                     
+                    ${!role.isSystemRole ? `
+                        <div class="mb-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="isActive" name="isActive" ${role.isActive ? 'checked' : ''}>
+                                <label class="form-check-label" for="isActive">
+                                    الدور نشط
+                                </label>
+                            </div>
+                        </div>
+                    ` : ''}
+                    
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i>
-                            حفظ الدور
-                        </button>
-                        <a href="/roles" class="btn btn-outline-secondary">إلغاء</a>
+                        ${!role.isSystemRole ? `
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i>
+                                حفظ التعديلات
+                            </button>
+                        ` : ''}
+                        <a href="/roles" class="btn btn-outline-secondary">العودة</a>
                     </div>
                 </form>
             </div>
@@ -84,55 +99,35 @@
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">تعليمات</h5>
+                <h5 class="mb-0">معلومات الدور</h5>
             </div>
             <div class="card-body">
-                <ul class="list-unstyled">
-                    <li class="mb-2">
-                        <i class="fas fa-info-circle text-info"></i>
-                        اختر اسماً واضحاً للدور
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-shield-alt text-warning"></i>
-                        حدد الصلاحيات بعناية
-                    </li>
-                    <li class="mb-2">
-                        <i class="fas fa-users text-success"></i>
-                        يمكن تعيين الدور لعدة مستخدمين
-                    </li>
-                </ul>
+                <p><strong>نوع الدور:</strong><br>
+                    ${role.isSystemRole ? 
+                        '<span class="badge bg-warning">دور النظام</span>' : 
+                        '<span class="badge bg-primary">دور مخصص</span>'
+                    }
+                </p>
+                <p><strong>عدد الصلاحيات:</strong><br>${role.permissions.length}</p>
+                <p><strong>تاريخ الإنشاء:</strong><br>${new Date(role.createdAt).toLocaleDateString('ar-EG')}</p>
+                <p><strong>آخر تحديث:</strong><br>${new Date(role.updatedAt).toLocaleDateString('ar-EG')}</p>
+                ${role.createdBy ? `<p><strong>تم الإنشاء بواسطة:</strong><br>${role.createdBy.username}</p>` : ''}
             </div>
         </div>
         
-        <div class="card mt-3">
-            <div class="card-header">
-                <h5 class="mb-0">أنواع الصلاحيات</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-12 mb-2">
-                        <span class="badge bg-info">عرض الخاصة</span>
-                        <small class="text-muted">عرض البيانات الخاصة بالمستخدم</small>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <span class="badge bg-primary">عرض الكل</span>
-                        <small class="text-muted">عرض جميع البيانات</small>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <span class="badge bg-success">إنشاء</span>
-                        <small class="text-muted">إضافة عناصر جديدة</small>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <span class="badge bg-warning">تعديل</span>
-                        <small class="text-muted">تحديث البيانات</small>
-                    </div>
-                    <div class="col-12 mb-2">
-                        <span class="badge bg-danger">حذف</span>
-                        <small class="text-muted">إزالة البيانات</small>
+        ${role.isSystemRole ? `
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5 class="mb-0">تحذير</h5>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        هذا دور نظام ولا يمكن تعديل اسمه أو حذفه
                     </div>
                 </div>
             </div>
-        </div>
+        ` : ''}
     </div>
 </div>
 
@@ -183,6 +178,11 @@
     border-color: #1976d2;
 }
 
+.permissions-table input[type="checkbox"]:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
 .permissions-table-container {
     border: 1px solid #e0e0e0;
     border-radius: 8px;
@@ -222,6 +222,8 @@
 
 <script>
 const groupedPermissions = ${JSON.stringify(groupedPermissions)};
+const rolePermissions = ${JSON.stringify(role.permissions.map(p => p._id.toString()))};
+const isSystemRole = ${role.isSystemRole};
 
 function getPermissionRows() {
     const moduleOrder = ['companies', 'clients', 'files', 'invoices', 'distributors', 'reports', 'commission-tiers', 'roles', 'permissions', 'system'];
@@ -252,12 +254,15 @@ function getPermissionRows() {
             actionOrder.forEach(action => {
                 const permission = groupedPermissions[module].find(p => p.action === action || p.action === 'read' || p.action === 'manage');
                 if (permission) {
+                    const isChecked = rolePermissions.includes(permission._id.toString());
                     rows += \`
                         <td>
                             <input type="checkbox" 
                                    name="permissions" 
                                    value="\${permission._id}" 
                                    id="perm_\${permission._id}"
+                                   \${isChecked ? 'checked' : ''}
+                                   \${isSystemRole ? 'disabled' : ''}
                                    class="form-check-input">
                         </td>
                     \`;
@@ -274,18 +279,24 @@ function getPermissionRows() {
 }
 
 function selectAllPermissions() {
-    document.querySelectorAll('input[name="permissions"]').forEach(checkbox => {
+    if (isSystemRole) return;
+    
+    document.querySelectorAll('input[name="permissions"]:not(:disabled)').forEach(checkbox => {
         checkbox.checked = true;
     });
 }
 
 function clearAllPermissions() {
-    document.querySelectorAll('input[name="permissions"]').forEach(checkbox => {
+    if (isSystemRole) return;
+    
+    document.querySelectorAll('input[name="permissions"]:not(:disabled)').forEach(checkbox => {
         checkbox.checked = false;
     });
 }
 
 function applyDefaultPermissions() {
+    if (isSystemRole) return;
+    
     // Clear all first
     clearAllPermissions();
     
@@ -296,7 +307,7 @@ function applyDefaultPermissions() {
             groupedPermissions[module].forEach(permission => {
                 if (permission.action === 'read' || permission.action === 'read_own') {
                     const checkbox = document.getElementById(\`perm_\${permission._id}\`);
-                    if (checkbox) checkbox.checked = true;
+                    if (checkbox && !checkbox.disabled) checkbox.checked = true;
                 }
             });
         }
@@ -319,17 +330,5 @@ function applyDefaultPermissions() {
         }
     }, 3000);
 }
-
-// Auto-generate role name from display name
-document.getElementById('displayName').addEventListener('input', function() {
-    const displayName = this.value;
-    const roleName = displayName
-        .toLowerCase()
-        .replace(/[^a-zA-Z0-9\\u0600-\\u06FF]/g, '_')
-        .replace(/_+/g, '_')
-        .replace(/^_|_$/g, '');
-    
-    document.getElementById('name').value = roleName;
-});
 </script>
 ` }) %>
