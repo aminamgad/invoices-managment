@@ -122,6 +122,16 @@
             transform: translateX(-5px);
         }
         
+        .sidebar .nav-link.disabled {
+            color: rgba(255,255,255,0.4);
+            cursor: not-allowed;
+        }
+        
+        .sidebar .nav-link.disabled:hover {
+            background-color: transparent;
+            transform: none;
+        }
+        
         .card {
             background-color: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -706,7 +716,17 @@
                                 </a>
                             </li>
                             
-                            <% if (currentUser.role === 'admin' || currentUser.permissions.canViewReports) { %>
+                            <!-- Reports - Check for view_own or view_all permission -->
+                            <% 
+                            const canViewReports = currentUser.role === 'admin' || 
+                                                 currentUser.permissions.canViewReports ||
+                                                 (currentUser.detailedPermissions && 
+                                                  currentUser.detailedPermissions.some(p => 
+                                                    p.module === 'reports' && 
+                                                    (p.action === 'view_own' || p.action === 'view_all')
+                                                  ));
+                            %>
+                            <% if (canViewReports) { %>
                             <li class="nav-item">
                                 <a class="nav-link" href="/reports">
                                     <i class="fas fa-chart-line ms-2"></i>
@@ -715,7 +735,16 @@
                             </li>
                             <% } %>
                             
-                            <% if (currentUser.role === 'admin' || currentUser.permissions.canManageClients) { %>
+                            <!-- Clients - Check for any client permission -->
+                            <% 
+                            const canAccessClients = currentUser.role === 'admin' || 
+                                                    currentUser.permissions.canManageClients ||
+                                                    (currentUser.detailedPermissions && 
+                                                     currentUser.detailedPermissions.some(p => 
+                                                       p.module === 'clients'
+                                                     ));
+                            %>
+                            <% if (canAccessClients) { %>
                             <li class="nav-item">
                                 <a class="nav-link" href="/clients">
                                     <i class="fas fa-users ms-2"></i>
@@ -724,7 +753,16 @@
                             </li>
                             <% } %>
                             
-                            <% if (currentUser.role === 'admin') { %>
+                            <!-- Distributors - Admin only or view_all permission -->
+                            <% 
+                            const canAccessDistributors = currentUser.role === 'admin' ||
+                                                         (currentUser.detailedPermissions && 
+                                                          currentUser.detailedPermissions.some(p => 
+                                                            p.module === 'distributors' && 
+                                                            p.action === 'view_all'
+                                                          ));
+                            %>
+                            <% if (canAccessDistributors) { %>
                             <li class="nav-item">
                                 <a class="nav-link" href="/distributors">
                                     <i class="fas fa-user-tie ms-2"></i>
@@ -733,7 +771,16 @@
                             </li>
                             <% } %>
                             
-                            <% if (currentUser.role === 'admin' || currentUser.permissions.canCreateCompanies) { %>
+                            <!-- Companies - Check for any company permission -->
+                            <% 
+                            const canAccessCompanies = currentUser.role === 'admin' || 
+                                                      currentUser.permissions.canCreateCompanies ||
+                                                      (currentUser.detailedPermissions && 
+                                                       currentUser.detailedPermissions.some(p => 
+                                                         p.module === 'companies'
+                                                       ));
+                            %>
+                            <% if (canAccessCompanies) { %>
                             <li class="nav-item">
                                 <a class="nav-link" href="/companies">
                                     <i class="fas fa-building ms-2"></i>
@@ -742,22 +789,58 @@
                             </li>
                             <% } %>
                             
+                            <!-- Files - Check for any file permission -->
+                            <% 
+                            const canAccessFiles = currentUser.role === 'admin' ||
+                                                  (currentUser.detailedPermissions && 
+                                                   currentUser.detailedPermissions.some(p => 
+                                                     p.module === 'files'
+                                                   ));
+                            %>
+                            <% if (canAccessFiles) { %>
                             <li class="nav-item">
                                 <a class="nav-link" href="/files">
                                     <i class="fas fa-folder ms-2"></i>
                                     الملفات
                                 </a>
                             </li>
+                            <% } else { %>
+                            <li class="nav-item">
+                                <a class="nav-link disabled" href="#" title="ليس لديك صلاحية للوصول">
+                                    <i class="fas fa-folder ms-2"></i>
+                                    الملفات
+                                    <i class="fas fa-lock ms-1" style="font-size: 0.8em;"></i>
+                                </a>
+                            </li>
+                            <% } %>
                             
-                            <% if (currentUser.role === 'admin' || currentUser.permissions.canCreateInvoices) { %>
+                            <!-- Invoices - Check for any invoice permission -->
+                            <% 
+                            const canAccessInvoices = currentUser.role === 'admin' || 
+                                                     currentUser.permissions.canCreateInvoices ||
+                                                     (currentUser.detailedPermissions && 
+                                                      currentUser.detailedPermissions.some(p => 
+                                                        p.module === 'invoices'
+                                                      ));
+                            %>
+                            <% if (canAccessInvoices) { %>
                             <li class="nav-item">
                                 <a class="nav-link" href="/invoices">
                                     <i class="fas fa-file-invoice ms-2"></i>
                                     الفواتير
                                 </a>
                             </li>
+                            <% } else { %>
+                            <li class="nav-item">
+                                <a class="nav-link disabled" href="#" title="ليس لديك صلاحية للوصول">
+                                    <i class="fas fa-file-invoice ms-2"></i>
+                                    الفواتير
+                                    <i class="fas fa-lock ms-1" style="font-size: 0.8em;"></i>
+                                </a>
+                            </li>
                             <% } %>
                             
+                            <!-- Commission Tiers - Admin only -->
                             <% if (currentUser.role === 'admin') { %>
                             <li class="nav-item">
                                 <a class="nav-link" href="/commission-tiers">

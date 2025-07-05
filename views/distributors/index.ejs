@@ -26,34 +26,67 @@
                         </tr>
                     </thead>
                     <tbody>
-                        ${distributors.map(distributor => `
-                            <tr>
-                                <td><strong>${distributor.username}</strong></td>
-                                <td><span class="badge bg-info">%${distributor.commissionRate}</span></td>
-                                <td>
-                                    <div class="d-flex flex-wrap gap-1">
-                                        ${distributor.permissions.canCreateCompanies ? '<span class="badge bg-primary">إنشاء شركات</span>' : ''}
-                                        ${distributor.permissions.canCreateInvoices ? '<span class="badge bg-success">إنشاء فواتير</span>' : ''}
-                                        ${distributor.permissions.canManageClients ? '<span class="badge bg-warning">إدارة عملاء</span>' : ''}
-                                        ${distributor.permissions.canViewReports ? '<span class="badge bg-info">عرض تقارير</span>' : ''}
-                                    </div>
-                                </td>
-                                <td>
-                                    ${distributor.isActive ? 
-                                        '<span class="badge bg-success">نشط</span>' : 
-                                        '<span class="badge bg-danger">غير نشط</span>'
-                                    }
-                                </td>
-                                <td>${new Date(distributor.createdAt).toLocaleDateString('ar-EG')}</td>
-                                <td>
-                                    <div class="btn-group" role="group">
-                                        <a href="/distributors/${distributor._id}/edit" class="btn btn-sm btn-outline-primary">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        `).join('')}
+                        ${distributors.map(distributor => {
+                            // Get permission summary
+                            const permissionSummary = [];
+                            const allPermissions = new Set();
+                            
+                            distributor.roles.forEach(role => {
+                                role.permissions.forEach(permission => {
+                                    allPermissions.add(`${permission.module}.${permission.action}`);
+                                });
+                            });
+                            
+                            const modules = ['companies', 'clients', 'files', 'invoices', 'distributors', 'reports'];
+                            const moduleNames = {
+                                'companies': 'الشركات',
+                                'clients': 'العملاء', 
+                                'files': 'الملفات',
+                                'invoices': 'الفواتير',
+                                'distributors': 'الموزعين',
+                                'reports': 'التقارير'
+                            };
+                            
+                            modules.forEach(module => {
+                                const hasAnyPermission = Array.from(allPermissions).some(p => p.startsWith(module + '.'));
+                                if (hasAnyPermission) {
+                                    permissionSummary.push(moduleNames[module]);
+                                }
+                            });
+                            
+                            return `
+                                <tr>
+                                    <td><strong>${distributor.username}</strong></td>
+                                    <td><span class="badge bg-info">%${distributor.commissionRate}</span></td>
+                                    <td>
+                                        <div class="d-flex flex-wrap gap-1">
+                                            ${permissionSummary.slice(0, 3).map(module => 
+                                                `<span class="badge bg-primary">${module}</span>`
+                                            ).join('')}
+                                            ${permissionSummary.length > 3 ? 
+                                                `<span class="badge bg-secondary">+${permissionSummary.length - 3} أخرى</span>` : 
+                                                ''
+                                            }
+                                        </div>
+                                        <small class="text-muted">${allPermissions.size} صلاحية</small>
+                                    </td>
+                                    <td>
+                                        ${distributor.isActive ? 
+                                            '<span class="badge bg-success">نشط</span>' : 
+                                            '<span class="badge bg-danger">غير نشط</span>'
+                                        }
+                                    </td>
+                                    <td>${new Date(distributor.createdAt).toLocaleDateString('ar-EG')}</td>
+                                    <td>
+                                        <div class="btn-group" role="group">
+                                            <a href="/distributors/${distributor._id}/edit" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            `;
+                        }).join('')}
                     </tbody>
                 </table>
             </div>

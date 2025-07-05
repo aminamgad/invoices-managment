@@ -31,38 +31,7 @@
                     </div>
                     
                     <div class="mb-3">
-<<<<<<< HEAD
-                        <label class="form-label">الصلاحيات</label>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="canCreateCompanies" name="permissions[canCreateCompanies]" ${distributor.permissions.canCreateCompanies ? 'checked' : ''}>
-                                    <label class="form-check-label" for="canCreateCompanies">
-                                        إنشاء الشركات
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="canCreateInvoices" name="permissions[canCreateInvoices]" ${distributor.permissions.canCreateInvoices ? 'checked' : ''}>
-                                    <label class="form-check-label" for="canCreateInvoices">
-                                        إنشاء الفواتير
-                                    </label>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="canManageClients" name="permissions[canManageClients]" ${distributor.permissions.canManageClients ? 'checked' : ''}>
-                                    <label class="form-check-label" for="canManageClients">
-                                        إدارة العملاء
-                                    </label>
-                                </div>
-                                <div class="form-check">
-                                    <input class="form-check-input" type="checkbox" id="canViewReports" name="permissions[canViewReports]" ${distributor.permissions.canViewReports ? 'checked' : ''}>
-                                    <label class="form-check-label" for="canViewReports">
-                                        عرض التقارير
-                                    </label>
-                                </div>
-=======
-                        <label class="form-label">صلاحيات الوسطاء</label>
+                        <label class="form-label">صلاحيات الموزع</label>
                         <div class="permissions-table-container">
                             <div class="table-responsive">
                                 <table class="table table-bordered permissions-table">
@@ -76,17 +45,16 @@
                                             <th class="text-center">حذف</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        ${getPermissionRows()}
+                                    <tbody id="permissionsTableBody">
+                                        <!-- Permissions will be populated by JavaScript -->
                                     </tbody>
                                 </table>
                             </div>
                             
                             <div class="d-flex justify-content-end mt-3">
-                                <button type="button" class="btn btn-primary btn-sm" onclick="updatePermissions()">
-                                    تحديث الصلاحيات
+                                <button type="button" class="btn btn-primary btn-sm" onclick="applyDefaultPermissions()">
+                                    تطبيق الصلاحيات الافتراضية
                                 </button>
->>>>>>> 70d44eb189c11774f4f7101db3effc7420714e4a
                             </div>
                         </div>
                     </div>
@@ -120,8 +88,6 @@
             <div class="card-body">
                 <p><strong>تاريخ الإنشاء:</strong><br>${new Date(distributor.createdAt).toLocaleDateString('ar-EG')}</p>
                 <p><strong>آخر تحديث:</strong><br>${new Date(distributor.updatedAt).toLocaleDateString('ar-EG')}</p>
-<<<<<<< HEAD
-=======
                 <p><strong>عدد الأدوار:</strong><br>${distributor.roles ? distributor.roles.length : 0}</p>
             </div>
         </div>
@@ -145,13 +111,10 @@
                     <h6 class="text-info">للمشرفين:</h6>
                     <small class="text-muted">فعّل عرض الكل للإشراف على جميع البيانات</small>
                 </div>
->>>>>>> 70d44eb189c11774f4f7101db3effc7420714e4a
             </div>
         </div>
     </div>
 </div>
-<<<<<<< HEAD
-=======
 
 <style>
 .permissions-table {
@@ -241,14 +204,15 @@
 const groupedPermissions = ${JSON.stringify(groupedPermissions)};
 const userPermissions = ${JSON.stringify(userPermissions)};
 
-function getPermissionRows() {
-    const moduleOrder = ['suppliers', 'clients', 'files', 'orders', 'agents'];
+function generatePermissionRows() {
+    const moduleOrder = ['companies', 'clients', 'files', 'invoices', 'distributors', 'reports'];
     const moduleNames = {
-        'suppliers': 'الشركات',
+        'companies': 'الشركات',
         'clients': 'العملاء',
         'files': 'الملفات', 
-        'orders': 'الطلبات',
-        'agents': 'الوُسطاء'
+        'invoices': 'الفواتير',
+        'distributors': 'الموزعين',
+        'reports': 'التقارير'
     };
     
     const actionOrder = ['view_own', 'view_all', 'create', 'update', 'delete'];
@@ -288,14 +252,15 @@ function getPermissionRows() {
     return rows;
 }
 
-function updatePermissions() {
+function applyDefaultPermissions() {
     // Apply default permissions based on module
     const defaultSettings = {
-        'suppliers': ['view_own', 'view_all'],
+        'companies': ['view_own', 'view_all'],
         'clients': ['view_own', 'view_all', 'create', 'update', 'delete'],
         'files': ['view_own', 'view_all', 'create', 'update', 'delete'],
-        'orders': ['view_own', 'view_all', 'create', 'update', 'delete'],
-        'agents': ['view_own']
+        'invoices': ['view_own', 'view_all', 'create', 'update', 'delete'],
+        'distributors': ['view_own'],
+        'reports': ['view_own']
     };
     
     Object.keys(defaultSettings).forEach(module => {
@@ -326,6 +291,13 @@ function updatePermissions() {
         }
     }, 3000);
 }
+
+// Initialize permissions table on page load
+document.addEventListener('DOMContentLoaded', function() {
+    const tbody = document.getElementById('permissionsTableBody');
+    if (tbody) {
+        tbody.innerHTML = generatePermissionRows();
+    }
+});
 </script>
->>>>>>> 70d44eb189c11774f4f7101db3effc7420714e4a
 ` }) %>
